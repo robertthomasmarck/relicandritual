@@ -1,0 +1,60 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Year of Bones" description="Itinerary for Year of Bones" navStartStyle="white">
+	<!-- Hero Banner -->
+	<section class="relative flex h-[50vh] min-h-[400px] w-full items-center justify-center overflow-hidden">
+		<div class="absolute inset-0 z-0">
+			<video id="hero-video" autoplay muted loop playsinline class="h-full w-full object-cover">
+				<source src="/video/flying-monastery.mp4" type="video/mp4" />
+			</video>
+			<div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.1) 45%, rgba(0,0,0,1) 100%);"></div>
+			<div class="absolute inset-0" style="background: radial-gradient(circle at 50% 43%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 5%, rgba(255,255,255,0) 15%);"></div>
+		</div>
+		<div class="relative z-10 text-center">
+			<h1 class="font-heading-1 text-5xl md:text-7xl text-white uppercase tracking-widest">Year of Bones</h1>
+			<p class="font-script text-white" style="font-size: 4.05rem; margin-top: 2.25rem;">Itinerary</p>
+		</div>
+		<!-- Video pause/play button -->
+		<button
+			id="video-toggle"
+			class="absolute bottom-4 right-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white transition hover:bg-black/70"
+			aria-label="Pause video"
+		>
+			<svg id="pause-icon" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+				<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+			</svg>
+			<svg id="play-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+				<path d="M8 5v14l11-7z"/>
+			</svg>
+		</button>
+	</section>
+
+<script>
+	const video = document.getElementById('hero-video') as HTMLVideoElement;
+	const toggleBtn = document.getElementById('video-toggle');
+	const pauseIcon = document.getElementById('pause-icon');
+	const playIcon = document.getElementById('play-icon');
+
+	toggleBtn?.addEventListener('click', () => {
+		if (video.paused) {
+			video.play();
+			pauseIcon?.classList.remove('hidden');
+			playIcon?.classList.add('hidden');
+			toggleBtn.setAttribute('aria-label', 'Pause video');
+		} else {
+			video.pause();
+			pauseIcon?.classList.add('hidden');
+			playIcon?.classList.remove('hidden');
+			toggleBtn.setAttribute('aria-label', 'Play video');
+		}
+	});
+</script>
+
+	<section class="mx-auto w-[90%] md:w-[70%] py-16 md:py-24">
+		<div class="text-base-content text-sm md:text-base">
+			<!-- Content goes here -->
+		</div>
+	</section>
+</BaseLayout>

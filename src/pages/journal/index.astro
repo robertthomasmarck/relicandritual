@@ -1,0 +1,97 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import { PortableText } from "astro-portabletext";
+import { client, urlFor } from "@lib/sanity";
+import heroImage from "@images/bull-skull.jpeg";
+
+// Fetch all published posts from Sanity
+const posts = await client.fetch(`
+	*[_type == "post"] | order(publishedAt desc) {
+		_id,
+		title,
+		slug,
+		mainImage,
+		publishedAt,
+		body,
+		"author": author->name
+	}
+`);
+---
+
+<BaseLayout title="Journal" description="Stories and insights from Relic & Ritual" navStartStyle="white">
+	<!-- Hero Banner -->
+	<section class="relative flex h-[50vh] min-h-[400px] w-full items-center justify-center bg-black">
+		<Image
+			src={heroImage}
+			alt="Journal"
+			class="absolute inset-0 h-full w-full object-cover"
+		/>
+		<div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.9) 100%);"></div>
+		<h1 class="relative z-10 font-heading-1 text-5xl md:text-7xl text-white uppercase tracking-widest bg-no-repeat bg-center px-16 py-12" style="background-image: url('/favicons/favicon-rnr.png'); background-size: 40%;">Journal</h1>
+	</section>
+
+	<section class="mx-auto w-[90%] md:w-[70%] py-16 md:py-24">
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+			<!-- Left sidebar - 1/3 -->
+			<aside class="md:col-span-1">
+				<div class="text-base-600 text-sm md:text-base">
+					<p class="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+					<p class="mb-4">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+					<p class="mb-4">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+					<p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				</div>
+			</aside>
+
+			<!-- Right content - 2/3 -->
+			<div class="md:col-span-2">
+				{posts.length === 0 ? (
+					<p class="text-center text-base-500">No posts yet. Check back soon!</p>
+				) : (
+					<div class="grid gap-16 md:gap-24">
+						{posts.map((post: any) => (
+							<article class="bg-white rounded-lg shadow-md p-6 md:p-8">
+								{post.mainImage && (
+									<div class="overflow-hidden rounded-lg mb-6 -mx-6 -mt-6 md:-mx-8 md:-mt-8">
+										<img
+											src={urlFor(post.mainImage).width(800).height(450).url()}
+											alt={post.title}
+											class="w-full h-auto object-cover"
+										/>
+									</div>
+								)}
+								<h2 class="h2 text-[1.725rem] md:text-[2.15rem]">
+									{post.title}
+								</h2>
+								<div class="text-base-500 text-sm mt-2 flex items-center gap-2">
+									{post.author && (
+										<span class="font-script text-xl">By {post.author}</span>
+									)}
+									{post.author && post.publishedAt && (
+										<span>•</span>
+									)}
+									{post.publishedAt && (
+										<time>
+											{new Date(post.publishedAt).toLocaleDateString('en-US', {
+												year: 'numeric',
+												month: 'long',
+												day: 'numeric'
+											})}
+										</time>
+									)}
+								</div>
+								<hr class="border-t border-base-300 mt-4" />
+								{post.body && (
+									<div class="text-base-content markdown-content mt-6 max-w-none text-[1.05rem] md:text-[1.2rem]">
+										<PortableText value={post.body} />
+									</div>
+								)}
+								<div class="h-[1.95rem] -mx-6 -mb-6 md:-mx-8 md:-mb-8 mt-6 rounded-br-[10px]" style="background-color: #901616;"></div>
+							</article>
+						))}
+					</div>
+				)}
+			</div>
+		</div>
+	</section>
+</BaseLayout>

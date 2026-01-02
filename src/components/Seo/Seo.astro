@@ -16,6 +16,10 @@ interface GenProps extends BaseProps {
 
 const { title = "general", description, image, noindex = false } = Astro.props as GenProps;
 
+// Format page title: "Page Title : Relic & Ritual" for subpages, or just the site title for home
+const isHomePage = title === siteData.title;
+const formattedTitle = isHomePage ? title : `${title} : ${siteData.name}`;
+
 let optimizedImage;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 
@@ -43,7 +47,7 @@ const imageUrl =
 ---
 
 <SEO
-	title={title}
+	title={formattedTitle}
 	description={description}
 	canonical={canonicalUrl.toString()}
 	openGraph={{

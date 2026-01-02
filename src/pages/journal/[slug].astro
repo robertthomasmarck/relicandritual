@@ -1,0 +1,80 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { PortableText } from "astro-portabletext";
+import { client, urlFor } from "@lib/sanity";
+
+export async function getStaticPaths() {
+	const posts = await client.fetch(`
+		*[_type == "post" && defined(slug.current)] {
+			"slug": slug.current
+		}
+	`);
+
+	return posts.map((post: { slug: string }) => ({
+		params: { slug: post.slug },
+	}));
+}
+
+const { slug } = Astro.params;
+
+const post = await client.fetch(
+	`
+	*[_type == "post" && slug.current == $slug][0] {
+		_id,
+		title,
+		slug,
+		mainImage,
+		publishedAt,
+		body,
+		"author": author->name
+	}
+`,
+	{ slug }
+);
+
+if (!post) {
+	return Astro.redirect("/404");
+}
+---
+
+<BaseLayout title={post.title} description={`Read ${post.title} on the Relic & Ritual Journal`}>
+	<article class="mx-auto max-w-3xl px-4 pt-24 md:pt-36">
+		<header class="text-center mb-8 md:mb-12">
+			<h1 class="h1 description">{post.title}</h1>
+			<div class="mt-4 text-base-500 text-sm flex items-center justify-center gap-4">
+				{post.publishedAt && (
+					<time>
+						{new Date(post.publishedAt).toLocaleDateString('en-US', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric'
+						})}
+					</time>
+				)}
+				{post.author && (
+					<span>by {post.author}</span>
+				)}
+			</div>
+		</header>
+
+		{post.mainImage && (
+			<div class="mb-8 md:mb-12 overflow-hidden rounded-lg">
+				<img
+					src={urlFor(post.mainImage).width(1200).height(675).url()}
+					alt={post.title}
+					class="w-full h-auto"
+				/>
+			</div>
+		)}
+
+		<div class="text-base-content markdown-content max-w-none text-sm md:text-base">
+			<PortableText value={post.body} />
+		</div>
+
+		<footer class="mt-12 pt-8 border-t border-base-200">
+			<a href="/journal/" class="text-primary-600 hover:text-primary-700 transition-colors">
+				&larr; Back to Journal
+			</a>
+		</footer>
+	</article>
+</BaseLayout>

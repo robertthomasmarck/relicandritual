@@ -4,6 +4,33 @@
 @use "@fontsource-variable/playfair-display";
 @use "@fontsource/cinzel-decorative"; */
 
+/* Legan custom font */
+@font-face {
+	font-family: "Legan";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 400;
+	src: url("../assets/fonts/Legan.otf") format("opentype");
+}
+
+/* TCHamilton script font */
+@font-face {
+	font-family: "TCHamilton";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 400;
+	src: url("../assets/fonts/TCHamiltonArcScript-Regular.otf") format("opentype");
+}
+
+/* TCHamiltonArc regular font */
+@font-face {
+	font-family: "TCHamiltonArc";
+	font-style: normal;
+	font-display: swap;
+	font-weight: 400;
+	src: url("../assets/fonts/TCHamiltonArc-Rg.otf") format("opentype");
+}
+
 /* work-sans-latin-wght-normal */
 @font-face {
 	font-family: "Work Sans Variable";

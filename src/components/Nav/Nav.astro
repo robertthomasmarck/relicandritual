@@ -1,5 +1,4 @@
 ---
-import Button from "@components/Button/Button.astro";
 import MobileNav from "@components/Nav/MobileNav/MobileNav.astro";
 import NavDropdown from "@components/Nav/NavDropdown/NavDropdown.astro";
 import NavLink from "@components/Nav/NavLink.astro";
@@ -16,12 +15,12 @@ const { startStyle = "default", rest } = Astro.props as Props;
 
 <div
 	id="nav__container"
-	class="initial fixed top-0 left-0 z-30 flex w-full flex-col py-2 transition-[padding,background-color] duration-300"
+	class="initial fixed top-0 left-0 z-30 flex w-full flex-col pt-6 pb-2 transition-[padding,background-color] duration-300"
 	transition:name={`nav`}
 	{...rest}
 >
 	<div class="mx-auto flex w-full" class:list={[{ "text-base-900": startStyle === "default" }]}>
-		<div class="site-container flex h-16 w-full items-center">
+		<div class="site-container flex h-[3.4rem] w-full items-center transition-[height] duration-300">
 			<header class="flex w-full items-center gap-2">
 				<!-- home button / image -->
 				<div class="flex flex-auto justify-start">
@@ -31,7 +30,7 @@ const { startStyle = "default", rest } = Astro.props as Props;
 				<!-- desktop nav menu -->
 				<div class="flex flex-auto justify-end lg:gap-4">
 					<nav class="hidden md:block">
-						<ul class="flex h-full items-center justify-center px-4 text-lg lg:gap-4">
+						<ul class="flex h-full items-center justify-center text-lg lg:gap-4 -mr-4">
 							{
 								// if dropdown exists, setup the dropdown, otherwise it is just a link
 								navData.map((navItem) =>
@@ -46,14 +45,6 @@ const { startStyle = "default", rest } = Astro.props as Props;
 							}
 						</ul>
 					</nav>
-					<Button
-						variant="secondary"
-						class=`nav__cta py-1 my-auto hidden md:block ${startStyle === "white" ? "data-[scrolled=true]:border-primary-200 data-[scrolled=true]:hover:border-primary-200/80" : "border-primary-200"}`
-						href="https://cosmicthemes.com/themes/horizon/"
-						data-scrolled="false"
-					>
-						Get Horizon
-					</Button>
 
 					<!-- mobile nav menu, only load on small screens where it is visible -->
 					<div class="md:hidden">
@@ -67,26 +58,22 @@ const { startStyle = "default", rest } = Astro.props as Props;
 
 <script>
 	let navbar: HTMLElement | null;
-	let navCTA: HTMLElement | null;
 
 	function scrollHandler() {
 		if (navbar) {
-			if (window.scrollY > 50) {
+			if (window.scrollY > 200) {
 				// if we have scrolled down the page a bit, adjust colors
 				navbar.classList.add("scrolled");
 				navbar.classList.remove("initial");
-				navCTA?.setAttribute("data-scrolled", "true");
 			} else {
 				navbar.classList.add("initial");
 				navbar.classList.remove("scrolled");
-				navCTA?.setAttribute("data-scrolled", "false");
 			}
 		}
 	}
 
 	function initNav() {
 		navbar = document.getElementById("nav__container");
-		navCTA = navbar?.querySelector(".nav__cta") as HTMLElement;
 		window.addEventListener("scroll", scrollHandler, { passive: true });
 	}
 
@@ -105,7 +92,15 @@ const { startStyle = "default", rest } = Astro.props as Props;
 
 	#nav__container.scrolled {
 		/* @apply bg-base-50 py-0; */
-		background-color: var(--color-base-50);
+		background-color: rgba(255, 255, 255, 0.25);
 		padding-block: 0;
+	}
+
+	#nav__container.scrolled .site-container {
+		height: 2.38rem; /* 30% smaller than 3.4rem */
+	}
+
+	#nav__container.scrolled :global(.site-title) {
+		font-size: 1.125rem !important; /* matches menu items (text-lg) */
 	}
 </style>
