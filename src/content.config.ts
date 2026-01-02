@@ -47,6 +47,20 @@ const testimonials = defineCollection({
 		}),
 });
 
+// itinerary (Year of Bones page content)
+const itinerary = defineCollection({
+	loader: glob({
+		pattern: "**/[^_]*.{md,mdx}",
+		base: "./src/data/itinerary",
+	}),
+	schema: () =>
+		z.object({
+			title: z.string(),
+			description: z.string().optional(),
+			draft: z.boolean().optional(),
+		}),
+});
+
 // other pages
 const otherPages = defineCollection({
 	// type: "content",
@@ -66,4 +80,5 @@ export const collections = {
 	portfolios,
 	testimonials,
 	otherPages,
+	itinerary,
 };

@@ -1,5 +1,13 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
+import { getCollection, render } from "astro:content";
+
+// Get itinerary content from markdown
+const itineraryEntries = await getCollection("itinerary", ({ data }) => {
+	return data.draft !== true;
+});
+const entry = itineraryEntries[0];
+const { Content } = await render(entry);
 ---
 
 <BaseLayout title="Year of Bones" description="Itinerary for Year of Bones" navStartStyle="white">
@@ -14,7 +22,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 		</div>
 		<div class="relative z-10 text-center">
 			<h1 class="font-heading-1 text-5xl md:text-7xl text-white uppercase tracking-widest">Year of Bones</h1>
-			<p class="text-white" style="font-family: 'TCHamiltonArc', cursive; font-size: 2.025rem; margin-top: 2.25rem;">Itinerary</p>
+			<p class="text-white" style="font-family: 'TCHamilton', cursive; font-size: 3.08rem; margin-top: 2.25rem;">Itinerary</p>
 		</div>
 		<!-- Video pause/play button -->
 		<button
@@ -53,8 +61,8 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 </script>
 
 	<section class="mx-auto w-[90%] md:w-[70%] py-16 md:py-24">
-		<div class="text-base-content text-sm md:text-base">
-			<!-- Content goes here -->
+		<div class="text-base-content markdown-content text-sm md:text-base">
+			<Content />
 		</div>
 	</section>
 </BaseLayout>

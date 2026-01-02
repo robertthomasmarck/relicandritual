@@ -18,6 +18,11 @@ import CinzelDecorative from "@fontsource/cinzel-decorative/files/cinzel-decorat
 import PlayfairDisplayVariable from "@fontsource-variable/playfair-display/files/playfair-display-latin-wght-normal.woff2";
 import RalewayVariable from "@fontsource-variable/raleway/files/raleway-latin-wght-normal.woff2";
 import WorkSansVariable from "@fontsource-variable/work-sans/files/work-sans-latin-wght-normal.woff2";
+
+// Custom fonts
+import LeganFont from "../assets/fonts/Legan.otf";
+import TCHamiltonFont from "../assets/fonts/TCHamiltonArcScript-Regular.otf";
+import TCHamiltonArcFont from "../assets/fonts/TCHamiltonArc-Rg.otf";
 ---
 
 <meta charset="utf-8" />
@@ -34,6 +39,11 @@ import WorkSansVariable from "@fontsource-variable/work-sans/files/work-sans-lat
 	crossorigin="anonymous"
 />
 <link rel="preload" href={CinzelDecorative} as="font" type="font/woff2" crossorigin="anonymous" />
+
+<!-- Custom font preloads -->
+<link rel="preload" href={LeganFont} as="font" type="font/otf" crossorigin="anonymous" />
+<link rel="preload" href={TCHamiltonFont} as="font" type="font/otf" crossorigin="anonymous" />
+<link rel="preload" href={TCHamiltonArcFont} as="font" type="font/otf" crossorigin="anonymous" />
 
 <!-- Favicon -->
 <link rel="icon" type="image/png" href="/favicons/favicon-rnr.png" />
