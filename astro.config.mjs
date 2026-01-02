@@ -11,7 +11,7 @@ import icon from "astro-icon"; // https://www.astroicon.dev/guides/upgrade/v1/
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://relicandritual.vercel.app",
+	site: "https://relicandritual.com",
 	output: "static",
 	adapter: vercel(),
 	integrations: [
