@@ -1,5 +1,8 @@
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
+import react from "@astrojs/react";
+import sanity from "@sanity/astro";
+import vercel from "@astrojs/vercel";
 import compress from "@playform/compress";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
@@ -8,8 +11,17 @@ import icon from "astro-icon"; // https://www.astroicon.dev/guides/upgrade/v1/
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://horizon.cosmicthemes.com",
+	site: "https://relicandritual.vercel.app",
+	output: "static",
+	adapter: vercel(),
 	integrations: [
+		react(),
+		sanity({
+			projectId: "bvrczugu",
+			dataset: "relicnritual",
+			useCdn: false,
+			studioBasePath: "/studio",
+		}),
 		// example auto import component into blog post mdx files
 		AutoImport({
 			imports: [
