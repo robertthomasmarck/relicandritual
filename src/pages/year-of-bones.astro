@@ -8,6 +8,9 @@ const itineraryEntries = await getCollection("itinerary", ({ data }) => {
 });
 const entry = itineraryEntries[0];
 const { Content } = await render(entry);
+
+// Auth token for API calls (optional)
+const authToken = import.meta.env.PUBLIC_CHECKLIST_AUTH_TOKEN || "";
 ---
 
 <BaseLayout title="Year of Bones" description="Itinerary for Year of Bones" navStartStyle="white">
@@ -61,8 +64,156 @@ const { Content } = await render(entry);
 </script>
 
 	<section class="mx-auto w-[90%] md:w-[70%] py-16 md:py-24">
-		<div class="text-base-content markdown-content text-sm md:text-base">
+		<div class="text-base-content markdown-content text-sm md:text-base" id="checklist-content">
 			<Content />
 		</div>
 	</section>
 </BaseLayout>
+
+<style>
+	/* Style the checkboxes */
+	#checklist-content :global(input[type="checkbox"]) {
+		width: 1.1rem;
+		height: 1.1rem;
+		accent-color: #d97706;
+		cursor: pointer;
+		margin-right: 0.5rem;
+	}
+
+	#checklist-content :global(input[type="checkbox"]:disabled) {
+		cursor: wait;
+		opacity: 0.5;
+	}
+
+	/* Strike through checked items */
+	#checklist-content :global(li:has(input[type="checkbox"]:checked)) {
+		color: #9ca3af;
+		text-decoration: line-through;
+	}
+
+	/* Loading state */
+	#checklist-content.loading :global(input[type="checkbox"]) {
+		pointer-events: none;
+		opacity: 0.5;
+	}
+</style>
+
+<script define:vars={{ authToken }}>
+	// Interactive checkbox functionality
+	const CHECKLIST_ID = "year-of-bones";
+	const AUTH_TOKEN = authToken;
+
+	// Generate stable ID from checkbox label text
+	function generateId(text) {
+		// Simple hash: use first 16 chars of base64 encoded text
+		return btoa(text.trim().toLowerCase().slice(0, 30))
+			.replace(/[^a-zA-Z0-9]/g, "")
+			.slice(0, 16);
+	}
+
+	// Fetch saved state from Sanity
+	async function loadChecklistState() {
+		try {
+			const response = await fetch(`/api/checklist?id=${encodeURIComponent(CHECKLIST_ID)}`);
+			if (!response.ok) return {};
+			const data = await response.json();
+			const state = {};
+			data.items?.forEach((item) => {
+				state[item.id] = item.checked;
+			});
+			return state;
+		} catch (error) {
+			console.error("Failed to load checklist state:", error);
+			return {};
+		}
+	}
+
+	// Save checkbox state to Sanity
+	async function saveCheckboxState(checkboxId, checked, label) {
+		try {
+			const headers = {
+				"Content-Type": "application/json",
+			};
+			if (AUTH_TOKEN) {
+				headers["Authorization"] = `Bearer ${AUTH_TOKEN}`;
+			}
+
+			const response = await fetch("/api/checklist", {
+				method: "POST",
+				headers,
+				body: JSON.stringify({
+					identifier: CHECKLIST_ID,
+					checkboxId,
+					checked,
+					label,
+				}),
+			});
+
+			return response.ok;
+		} catch (error) {
+			console.error("Failed to save checkbox state:", error);
+			return false;
+		}
+	}
+
+	// Initialize checkboxes
+	async function initCheckboxes() {
+		const container = document.getElementById("checklist-content");
+		if (!container) return;
+
+		// Add loading class
+		container.classList.add("loading");
+
+		// Find all checkboxes
+		const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+
+		// Load saved state
+		const savedState = await loadChecklistState();
+
+		// Enable and configure each checkbox
+		checkboxes.forEach((checkbox) => {
+			// Get the label text from the parent li
+			const li = checkbox.closest("li");
+			const labelText = li?.textContent?.trim() || "";
+			const checkboxId = generateId(labelText);
+
+			// Remove disabled attribute (markdown renders them disabled by default)
+			checkbox.removeAttribute("disabled");
+
+			// Apply saved state if exists
+			if (savedState[checkboxId] !== undefined) {
+				checkbox.checked = savedState[checkboxId];
+			}
+
+			// Add change listener
+			checkbox.addEventListener("change", async (e) => {
+				const target = e.target;
+				const newChecked = target.checked;
+
+				// Disable while saving
+				target.disabled = true;
+
+				const success = await saveCheckboxState(checkboxId, newChecked, labelText);
+
+				if (!success) {
+					// Revert on failure
+					target.checked = !newChecked;
+				}
+
+				// Re-enable
+				target.disabled = false;
+			});
+		});
+
+		// Remove loading class
+		container.classList.remove("loading");
+	}
+
+	// Run on page load
+	document.addEventListener("DOMContentLoaded", initCheckboxes);
+
+	// Also run immediately in case DOM is already loaded
+	if (document.readyState !== "loading") {
+		initCheckboxes();
+	}
+</script>

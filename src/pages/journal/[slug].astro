@@ -3,6 +3,8 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import { PortableText } from "astro-portabletext";
 import { client, urlFor } from "@lib/sanity";
 
+export const prerender = true;
+
 export async function getStaticPaths() {
 	const posts = await client.fetch(`
 		*[_type == "post" && defined(slug.current)] {

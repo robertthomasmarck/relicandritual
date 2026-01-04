@@ -4,6 +4,8 @@ import PortfolioLayout from "@layouts/PortfolioLayout.astro";
 import { type InferGetStaticPropsType } from "astro";
 import { type CollectionEntry, getCollection, render } from "astro:content";
 
+export const prerender = true;
+
 export async function getStaticPaths() {
 	const portfolios = await getCollection("portfolios", ({ data }) => {
 		// filter out draft pages
